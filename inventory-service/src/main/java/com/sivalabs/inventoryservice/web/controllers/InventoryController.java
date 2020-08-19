@@ -29,11 +29,7 @@ public class InventoryController {
     public ResponseEntity<InventoryItem> findInventoryByProductCode(@PathVariable("productCode") String productCode) {
         log.info("Finding inventory for product code :"+productCode);
         Optional<InventoryItem> inventoryItem = inventoryItemRepository.findByProductCode(productCode);
-        if(inventoryItem.isPresent()) {
-            return new ResponseEntity(inventoryItem, HttpStatus.OK);
-        } else {
-            return new ResponseEntity(HttpStatus.NOT_FOUND);
-        }
+        return inventoryItem.map(item -> new ResponseEntity<>(item, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @GetMapping("/api/inventory")
