@@ -28,15 +28,14 @@ public class ProductController {
     @GetMapping("")
     public List<Product> allProducts(HttpServletRequest request) {
         log.info("Finding all products");
-        String auth_header = request.getHeader("AUTH_HEADER");
-        log.info("AUTH_HEADER: "+auth_header);
+        log.info("AUTH_HEADER: " + request.getHeader("AUTH_HEADER"));
         return productService.findAllProducts();
     }
 
     @GetMapping("/{code}")
     public Product productByCode(@PathVariable String code) {
-        log.info("Finding product by code :"+code);
+        log.info("Finding product by code :" + code);
         return productService.findProductByCode(code)
-                .orElseThrow(() -> new ProductNotFoundException("Product with code ["+code+"] doesn't exist"));
+                .orElseThrow(() -> new ProductNotFoundException("Product with code [" + code + "] doesn't exist"));
     }
 }

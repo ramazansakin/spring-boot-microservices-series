@@ -13,6 +13,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -20,7 +21,7 @@ import java.util.Optional;
 public class InventoryServiceClient {
     private final RestTemplate restTemplate;
     private final InventoryServiceFeignClient inventoryServiceFeignClient;
-    //TODO; move this to config file
+    // TODO; move this to config file
     private static final String INVENTORY_API_PATH = "http://inventory-service/api/";
 
 
@@ -54,17 +55,8 @@ public class InventoryServiceClient {
                         ProductInventoryResponse.class,
                         productCode);
 
-        /*
-        //Simulate Delay
-        try {
-            java.util.concurrent.TimeUnit.SECONDS.sleep(5);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        */
-
         if (itemResponseEntity.getStatusCode() == HttpStatus.OK) {
-            Integer quantity = itemResponseEntity.getBody().getAvailableQuantity();
+            Integer quantity = Objects.requireNonNull(itemResponseEntity.getBody()).getAvailableQuantity();
             log.info("Available quantity: " + quantity);
             return Optional.ofNullable(itemResponseEntity.getBody());
         } else {
