@@ -5,12 +5,10 @@ import com.sivalabs.catalogservice.exceptions.ProductNotFoundException;
 import com.sivalabs.catalogservice.services.ProductService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -38,4 +36,24 @@ public class ProductController {
         return productService.findProductByCode(code)
                 .orElseThrow(() -> new ProductNotFoundException("Product with code [" + code + "] doesn't exist"));
     }
+
+    @PostMapping("")
+    public Product create(@RequestBody @Valid Product product) {
+        return productService.createProduct(product);
+    }
+
+    @PutMapping
+    public Product update(@PathVariable Long id, @RequestBody @Valid Product product) {
+        if (!productService.findById(id).isPresent())
+            throw new ProductNotFoundException("Product not found with id : " + id);
+        return productService.updateProduct(id, product);
+    }
+
+    @DeleteMapping("")
+    public Boolean deleteProduct(@PathVariable Long id) {
+        if (!productService.findById(id).isPresent())
+            throw new ProductNotFoundException("Product not found with id : " + id);
+        return productService.deleteProduct(id);
+    }
+
 }

@@ -5,6 +5,9 @@ import com.sivalabs.catalogservice.repositories.ProductRepository;
 import com.sivalabs.catalogservice.utils.MyThreadLocalsHolder;
 import com.sivalabs.catalogservice.web.models.ProductInventoryResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,4 +64,41 @@ public class ProductService {
         }
         return productOptional;
     }
+
+    public Product createProduct(Product product) {
+        return productRepository.save(product);
+    }
+
+    public Optional<Product> findById(Long id) {
+        return productRepository.findById(id);
+    }
+
+    public Product updateProduct(Long id, Product product) {
+        Product one = productRepository.getOne(id);
+        copyNonNullProperties(product, one);
+        return productRepository.save(one);
+    }
+
+    public Boolean deleteProduct(Long productId) {
+        productRepository.deleteById(productId);
+        return true;
+    }
+
+    public static void copyNonNullProperties(Object src, Object target) {
+        BeanUtils.copyProperties(src, target, getNullPropertyNames(src));
+    }
+
+    public static String[] getNullPropertyNames(Object source) {
+        final BeanWrapper src = new BeanWrapperImpl(source);
+        java.beans.PropertyDescriptor[] pds = src.getPropertyDescriptors();
+
+        Set<String> emptyNames = new HashSet<>();
+        for (java.beans.PropertyDescriptor pd : pds) {
+            Object srcValue = src.getPropertyValue(pd.getName());
+            if (srcValue == null) emptyNames.add(pd.getName());
+        }
+        String[] result = new String[emptyNames.size()];
+        return emptyNames.toArray(result);
+    }
+
 }
